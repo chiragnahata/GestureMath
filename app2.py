@@ -3,7 +3,6 @@ from tkinter import ttk, scrolledtext, colorchooser, messagebox, filedialog, sim
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
-import google.generativeai as genai
 import mediapipe as mp
 import threading
 import base64
@@ -23,8 +22,7 @@ class GestureMathApp:
 
         self.load_settings()
 
-        genai.configure(api_key=self.settings['api_key'])
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.model = None  # Initialize model later when needed
 
         self.cap = cv2.VideoCapture(0)
         self.cap.set(3, 1280)
@@ -88,6 +86,8 @@ class GestureMathApp:
         self.menu_bar.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="User Guide", command=self.show_user_guide)
         help_menu.add_command(label="About", command=self.show_about)
+
+    # ... (rest of the code from the previous response)
 
     def create_widgets(self):
         self.style = ttk.Style()
@@ -202,33 +202,37 @@ class GestureMathApp:
     def open_length_conversion(self):
         conversion_window = tk.Toplevel(self.window)
         conversion_window.title("Length Conversion")
-        
+
         ttk.Label(conversion_window, text="From:").grid(row=0, column=0)
         from_unit = ttk.Combobox(conversion_window, values=["meters", "feet", "inches"])
         from_unit.grid(row=0, column=1)
-        
+
         ttk.Label(conversion_window, text="To:").grid(row=1, column=0)
         to_unit = ttk.Combobox(conversion_window, values=["meters", "feet", "inches"])
         to_unit.grid(row=1, column=1)
-        
+
         ttk.Label(conversion_window, text="Value:").grid(row=2, column=0)
         value_entry = ttk.Entry(conversion_window)
         value_entry.grid(row=2, column=1)
-        
+
         result_label = ttk.Label(conversion_window, text="")
         result_label.grid(row=3, column=0, columnspan=2)
-        
+
         def convert():
             try:
                 value = float(value_entry.get())
                 from_unit_val = from_unit.get()
                 to_unit_val = to_unit.get()
-                
+
                 # Conversion logic
                 if from_unit_val == to_unit_val:
                     result = value
                 elif from_unit_val == "meters" and to_unit_val == "feet":
                     result = value * 3.28084
+                elif from_unit_val == "meters" and to_unit_val == "inches":
+                    result = value
+                # ... (rest of the code from the previous response)
+
                 elif from_unit_val == "meters" and to_unit_val == "inches":
                     result = value * 39.3701
                 elif from_unit_val == "feet" and to_unit_val == "meters":
@@ -241,38 +245,38 @@ class GestureMathApp:
                     result = value / 12
                 else:
                     result = "Invalid conversion"
-                
+
                 result_label.config(text=f"Result: {result:.4f} {to_unit_val}")
             except ValueError:
                 result_label.config(text="Invalid input")
-        
+
         ttk.Button(conversion_window, text="Convert", command=convert).grid(row=4, column=0, columnspan=2)
 
     def open_weight_conversion(self):
         conversion_window = tk.Toplevel(self.window)
         conversion_window.title("Weight Conversion")
-        
+
         ttk.Label(conversion_window, text="From:").grid(row=0, column=0)
         from_unit = ttk.Combobox(conversion_window, values=["kg", "lbs", "oz"])
         from_unit.grid(row=0, column=1)
-        
+
         ttk.Label(conversion_window, text="To:").grid(row=1, column=0)
         to_unit = ttk.Combobox(conversion_window, values=["kg", "lbs", "oz"])
         to_unit.grid(row=1, column=1)
-        
+
         ttk.Label(conversion_window, text="Value:").grid(row=2, column=0)
         value_entry = ttk.Entry(conversion_window)
         value_entry.grid(row=2, column=1)
-        
+
         result_label = ttk.Label(conversion_window, text="")
         result_label.grid(row=3, column=0, columnspan=2)
-        
+
         def convert():
             try:
                 value = float(value_entry.get())
                 from_unit_val = from_unit.get()
                 to_unit_val = to_unit.get()
-                
+
                 # Conversion logic
                 if from_unit_val == to_unit_val:
                     result = value
@@ -290,38 +294,38 @@ class GestureMathApp:
                     result = value / 16
                 else:
                     result = "Invalid conversion"
-                
+
                 result_label.config(text=f"Result: {result:.4f} {to_unit_val}")
             except ValueError:
                 result_label.config(text="Invalid input")
-        
+
         ttk.Button(conversion_window, text="Convert", command=convert).grid(row=4, column=0, columnspan=2)
 
     def open_temperature_conversion(self):
         conversion_window = tk.Toplevel(self.window)
         conversion_window.title("Temperature Conversion")
-        
+
         ttk.Label(conversion_window, text="From:").grid(row=0, column=0)
         from_unit = ttk.Combobox(conversion_window, values=["Celsius", "Fahrenheit", "Kelvin"])
         from_unit.grid(row=0, column=1)
-        
+
         ttk.Label(conversion_window, text="To:").grid(row=1, column=0)
         to_unit = ttk.Combobox(conversion_window, values=["Celsius", "Fahrenheit", "Kelvin"])
         to_unit.grid(row=1, column=1)
-        
+
         ttk.Label(conversion_window, text="Value:").grid(row=2, column=0)
         value_entry = ttk.Entry(conversion_window)
         value_entry.grid(row=2, column=1)
-        
+
         result_label = ttk.Label(conversion_window, text="")
         result_label.grid(row=3, column=0, columnspan=2)
-        
+
         def convert():
             try:
                 value = float(value_entry.get())
                 from_unit_val = from_unit.get()
                 to_unit_val = to_unit.get()
-                
+
                 # Conversion logic
                 if from_unit_val == to_unit_val:
                     result = value
@@ -339,38 +343,38 @@ class GestureMathApp:
                     result = (value - 273.15) * 9/5 + 32
                 else:
                     result = "Invalid conversion"
-                
+
                 result_label.config(text=f"Result: {result:.2f} {to_unit_val}")
             except ValueError:
                 result_label.config(text="Invalid input")
-        
+
         ttk.Button(conversion_window, text="Convert", command=convert).grid(row=4, column=0, columnspan=2)
 
     def open_currency_conversion(self):
         conversion_window = tk.Toplevel(self.window)
         conversion_window.title("Currency Conversion")
-        
+
         ttk.Label(conversion_window, text="From:").grid(row=0, column=0)
         from_currency = ttk.Combobox(conversion_window, values=["USD", "EUR", "GBP", "JPY"])
         from_currency.grid(row=0, column=1)
-        
+
         ttk.Label(conversion_window, text="To:").grid(row=1, column=0)
         to_currency = ttk.Combobox(conversion_window, values=["USD", "EUR", "GBP", "JPY"])
         to_currency.grid(row=1, column=1)
-        
+
         ttk.Label(conversion_window, text="Amount:").grid(row=2, column=0)
         amount_entry = ttk.Entry(conversion_window)
         amount_entry.grid(row=2, column=1)
-        
+
         result_label = ttk.Label(conversion_window, text="")
         result_label.grid(row=3, column=0, columnspan=2)
-        
+
         def convert():
             try:
                 amount = float(amount_entry.get())
                 from_curr = from_currency.get()
                 to_curr = to_currency.get()
-                
+
                 # Note: These are example exchange rates and should be updated regularly in a real application
                 rates = {
                     "USD": 1.0,
@@ -378,7 +382,7 @@ class GestureMathApp:
                     "GBP": 0.73,
                     "JPY": 110.0
                 }
-                
+
                 if from_curr in rates and to_curr in rates:
                     result = amount * (rates[to_curr] / rates[from_curr])
                     result_label.config(text=f"Result: {result:.2f} {to_curr}")
@@ -386,7 +390,7 @@ class GestureMathApp:
                     result_label.config(text="Invalid currency selection")
             except ValueError:
                 result_label.config(text="Invalid input")
-        
+
         ttk.Button(conversion_window, text="Convert", command=convert).grid(row=4, column=0, columnspan=2)
 
     def update(self):
@@ -395,10 +399,10 @@ class GestureMathApp:
             if ret:
                 frame = cv2.flip(frame, 1)
                 self.check_lighting(frame)
-                
+
                 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 results = self.hands.process(rgb_frame)
-                
+
                 if results.multi_hand_landmarks:
                     for hand_landmarks in results.multi_hand_landmarks:
                         self.mp_draw.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
@@ -476,7 +480,7 @@ class GestureMathApp:
         self.prev_pos = None
         self.result_text.delete(1.0, tk.END)
         self.result_text.insert(tk.END, "Canvas cleared.\n")
-        
+
         for widget in self.graph_frame.winfo_children():
             widget.destroy()
 
@@ -521,6 +525,8 @@ class GestureMathApp:
         submit_button = ttk.Button(input_window, text="Solve", command=lambda: self.solve_manual_input(input_text.get("1.0", tk.END).strip()))
         submit_button.pack(pady=10)
 
+    # ... (rest of the code from the previous response)
+
     def solve_manual_input(self, problem):
         self.result_text.delete(1.0, tk.END)
         self.result_text.insert(tk.END, "Solving manually entered problem...\n")
@@ -536,7 +542,7 @@ class GestureMathApp:
             response = self.model.generate_content(prompt)
             self.ai_result = response.text
 
-            self.ai_result = self.ai_result.replace('#', '').replace('**', '')
+            self.ai_result = self.ai_result.replace('#', '').replace('', '')
 
             self.result_text.insert(tk.END, self.ai_result)
             self.plot_graph_if_available()
@@ -551,7 +557,7 @@ class GestureMathApp:
         self.result_text.insert(tk.END, "Solving...\n")
         self.status_bar.config(text="Solving problem...")
         start_time = datetime.now()
-        
+
         gray = cv2.cvtColor(self.canvas, cv2.COLOR_BGR2GRAY)
         _, thresh = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
         pil_image = Image.fromarray(thresh)
@@ -566,7 +572,7 @@ class GestureMathApp:
             response = self.model.generate_content([prompt, encoded_image])
             self.ai_result = response.text
 
-            self.ai_result = self.ai_result.replace('#', '').replace('**', '')
+            self.ai_result = self.ai_result.replace('#', '').replace('', '')
 
             self.result_text.insert(tk.END, self.ai_result)
             self.plot_graph_if_available()
@@ -581,7 +587,7 @@ class GestureMathApp:
     def plot_graph_if_available(self):
         if "GRAPH:" in self.ai_result:
             graph_data = self.ai_result.split("GRAPH:")[1].split("KEY FEATURES:")[0].strip()
-            
+
             fig, ax = plt.subplots(figsize=(5, 4))
             ax.plot([0, 1, 2, 3, 4], [0, 1, 4, 9, 16])  # Example plot, replace with actual data
             ax.set_title("Graph Representation")
@@ -600,14 +606,14 @@ class GestureMathApp:
         return base64.b64encode(buffered.getvalue()).decode()
 
     def save_solution(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", ".txt"), ("All files", ".*")])
         if file_path:
             with open(file_path, 'w') as file:
                 file.write(self.result_text.get(1.0, tk.END))
             messagebox.showinfo("Save Solution", "Solution saved successfully!")
 
     def load_solution(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        file_path = filedialog.askopenfilename(filetypes=[("Text files", ".txt"), ("All files", ".*")])
         if file_path:
             with open(file_path, 'r') as file:
                 content = file.read()
@@ -633,7 +639,7 @@ class GestureMathApp:
             self.settings['api_key'] = api_key_entry.get()
             self.settings['language'] = lang_var.get()
             self.save_settings()
-            genai.configure(api_key=self.settings['api_key'])
+            self.model = genai.GenerativeModel('gemini-1.5-flash')  # Initialize model with updated API key
             pref_window.destroy()
 
         ttk.Button(pref_window, text="Save", command=save_preferences).pack(pady=10)
@@ -673,4 +679,4 @@ class GestureMathApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = GestureMathApp(root, "GestureMath by Team codeARC")
+    app = GestureMathApp(root, "GestureMath")
