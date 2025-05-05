@@ -36,7 +36,7 @@
  
      ```bash
      git clone https://github.com/chiragnahata/GestureMath.git
-     cd Hand-Gesture-Math-Solver
+     cd GestureMath
      ```
  
   2. **Create and activate a virtual environment (optional but recommended):**
