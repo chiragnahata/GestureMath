@@ -7,11 +7,11 @@ from PIL import Image
 import time
 
 # Set your API key directly in the script
-API_KEY = "AIzaSyDcMZQj-kDOyG35D86mT3zJPb_4OO0I7dE"
+API_KEY = "AIzaSyBj0NVO43NcnMElpvJRdR8oLredTqstaQ0"
 
 # Configure the generative AI model
 genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-flash-latest')
 
 # Initialize webcam
 cap = cv2.VideoCapture(0)

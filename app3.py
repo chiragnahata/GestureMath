@@ -21,7 +21,7 @@ API_KEY = "YOUR_API_KEY_HERE"
 
 # Configure the generative AI model
 genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 # Initialize webcam
 cap = cv2.VideoCapture(0)
@@ -727,7 +727,7 @@ class GestureMathApp(tk.Tk):
             self.settings['api_key'] = api_key_entry.get()
             self.settings['language'] = lang_var.get()
             self.save_settings()
-            self.model = genai.GenerativeModel('gemini-1.5-flash')  # Initialize model with updated API key
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')  # Initialize model with updated API key
             pref_window.destroy()
 
         ttk.Button(pref_window, text="Save", command=save_preferences).pack(pady=10)

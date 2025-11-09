@@ -12,6 +12,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import json
 import os
 from datetime import datetime
+import google.generativeai as genai
 
 class GestureMathApp:
     def __init__(self, window, window_title):
@@ -22,7 +23,7 @@ class GestureMathApp:
 
         self.load_settings()
 
-        self.model = None  # Initialize model later when needed
+        # Model is initialized in load_settings()
 
         self.cap = cv2.VideoCapture(0)
         self.cap.set(3, 1280)
@@ -62,6 +63,13 @@ class GestureMathApp:
         except FileNotFoundError:
             self.settings = default_settings
             self.save_settings()
+        
+        # Initialize Gemini AI model
+        if self.settings['api_key'] != 'YOUR_API_KEY_HERE':
+            genai.configure(api_key=self.settings['api_key'])
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        else:
+            self.model = None
 
     def save_settings(self):
         with open('settings.json', 'w') as f:
@@ -639,7 +647,7 @@ class GestureMathApp:
             self.settings['api_key'] = api_key_entry.get()
             self.settings['language'] = lang_var.get()
             self.save_settings()
-            self.model = genai.GenerativeModel('gemini-1.5-flash')  # Initialize model with updated API key
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')  # Initialize model with updated API key
             pref_window.destroy()
 
         ttk.Button(pref_window, text="Save", command=save_preferences).pack(pady=10)
